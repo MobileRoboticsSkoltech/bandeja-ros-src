@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="image_view" type="image_view" name="image_view" args="image:=/rgb/image_raw _image_transport:=theora" />
+</launch>

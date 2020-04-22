@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- <include file="$(find data_collection)/launch/velodyne.launch"/> -->
+  <include file="$(find data_collection)/launch/basler.launch"/>
+  <include file="$(find data_collection)/launch/azure.launch"/>
+  <!-- <include file="$(find data_collection)/launch/imu.launch"/> -->
+</launch>

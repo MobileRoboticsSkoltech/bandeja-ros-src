@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+ <include file="$(find pylon_camera)/launch/pylon_camera_node.launch" >
+    <!-- <arg name="fps" default="5" /> -->
+  </include>
+  <node pkg="rosservice" type="rosservice" name="basler_trigger_mode"     args="call --wait /pylon_camera_node/set_trigger_mode     'data : true'" />
+  <node pkg="rosservice" type="rosservice" name="basler_trigger_source"   args="call --wait /pylon_camera_node/set_trigger_source   'value : 1'" />
+  <node pkg="rosservice" type="rosservice" name="basler_trigger_selector" args="call --wait /pylon_camera_node/set_trigger_selector 'value : 0'" />
+</launch>
