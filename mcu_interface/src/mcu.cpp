@@ -204,6 +204,7 @@ int main(int argc, char **argv) {
     while(ros::ok()) {
         if(serial.available() > TEMP_BUF_SIZE) {
         	str = serial.readline();
+        	//std::cout << str << std::endl;
             std::vector<int16_t> ints = string_to_ints(str, PLD_STRT_INDX);
             FieldsCount fields_count;
             ros::Time ts = ints_to_board_ts(ints, &fields_count);
@@ -211,15 +212,12 @@ int main(int argc, char **argv) {
 				case 'i': {
 					boost::numeric::ublas::vector<double> imu_meas;
 					imu_meas = ints_to_imu_meas(ints, &fields_count);
-					publish_imu(imu_pub, 0, ts, imu_meas);//std::cout << str;//.size() << std::endl;
-					publish_imu_temperature(imu_temp_pub, 0, ts, imu_meas);//std::cout << str;//.size() << std::endl;
+					publish_imu(imu_pub, 0, ts, imu_meas);
+					publish_imu_temperature(imu_temp_pub, 0, ts, imu_meas);
 					break;
 				}
-				case 'v': {
+				case 'c': {
 					publish_cameras_ts(cameras_ts_pub, ts);
-					break;
-				}
-				case 'd': {
 					break;
 				}
 				case 'l': {
