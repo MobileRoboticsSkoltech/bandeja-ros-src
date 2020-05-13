@@ -222,6 +222,7 @@ int main(int argc, char **argv) {
 				}
 				case 'l': {
 					publish_lidar_ts(lidar_ts_pub, ts);
+					//std::cout << ts << std::endl;
 				}
 			}
 	    }

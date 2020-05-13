@@ -18,6 +18,7 @@ rosservice call /pylon_camera_node/set_trigger_mode "data : true"
 rosservice call /pylon_camera_node/set_trigger_source "value : 1"
 rosservice call /pylon_camera_node/set_trigger_selector "value : 0"
 ```
+`rosrun pylon_camera write_device_user_id_to_camera 1`
 
 ## Azure Depth Camera
 - Install __Azure Kinect Sensor SDK__ from [here](https://docs.microsoft.com/en-us/azure/kinect-dk/sensor-sdk-download#linux-installation-instructions)
