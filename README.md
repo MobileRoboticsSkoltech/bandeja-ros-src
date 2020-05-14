@@ -1,34 +1,21 @@
 # Samsung Avatar Dataset
-## Samsung S10E
-TBD
 
-## Velodyne LIDAR
-TBD
+Before building the packages by `catkin_make` command the following software must be installed:
 
+- for Basler visual cameras __pylon 5.1.0 Camera Software Suite Linux x86 (64 bit) - Debian Installer Package__ from [here](https://www.baslerweb.com/en/sales-support/downloads/software-downloads/pylon-5-1-0-linux-x86-64-bit-debian/)  
+- for Azure camera __Azure Kinect Sensor SDK__ from [here](https://docs.microsoft.com/en-us/azure/kinect-dk/sensor-sdk-download#linux-installation-instructions)  
+
+Sensors used:
 ## Basler Visual Cameras
-- Install __pylon 5.1.0 Camera Software Suite Linux x86 (64 bit) - Debian Installer Package__ from [here](https://www.baslerweb.com/en/sales-support/downloads/software-downloads/pylon-5-1-0-linux-x86-64-bit-debian/)
-- clone https://github.com/basler/pylon-ros-camera.git
-
-start  
-roslaunch pylon_camera pylon_camera_node.launch
-
-do for hardware triggering 
-```
-rosservice call /pylon_camera_node/set_trigger_mode "data : true"
-rosservice call /pylon_camera_node/set_trigger_source "value : 1"
-rosservice call /pylon_camera_node/set_trigger_selector "value : 0"
-```
-`rosrun pylon_camera write_device_user_id_to_camera 1`
-
 ## Azure Depth Camera
-- Install __Azure Kinect Sensor SDK__ from [here](https://docs.microsoft.com/en-us/azure/kinect-dk/sensor-sdk-download#linux-installation-instructions)
-- clone https://github.com/microsoft/Azure_Kinect_ROS_Driver.git
+## Velodyne LIDAR
+Patched package is used
 
 ## MCU-IMU firmware
-TBD
+
 ## Serial
-clone https://github.com/wjwwood/serial.git
+`serial` is a C++ library for seial interface with MCU ([repo](https://github.com/wjwwood/serial.git)).
 
 ## Full roslaunch
-TBD
-
+Full roslaunch for launching all of the sensors 
+`roslaunch data_collection datacollection.launch`
