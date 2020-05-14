@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <include file="$(find azure_kinect_ros_driver)/launch/driver.launch" >
-    <arg name="fps" default="5" />
-  </include>
-
-</launch>
-

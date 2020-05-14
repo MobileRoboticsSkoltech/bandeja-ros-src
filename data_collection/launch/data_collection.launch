@@ -1,17 +1,39 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="node_name" default="pylon_camera_node" />
-  <!-- <include file="$(find data_collection)/launch/velodyne.launch"/> -->
+  
+  <!-- Arguments -->
+  <arg name="pylon_node_name0" default="pylon_camera_node0" />
+  <arg name="pylon_node_name1" default="pylon_camera_node1" />
+
+  
+  <!-- Velodyne lidar-->
+  <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
+  
+
+  <!-- Basler cameras-->
   <include file="$(find data_collection)/launch/basler.launch">
   	<arg name="device_user_id" value="cam0" />
-  	<arg name="node_name" value="$(arg node_name)" />
+  	<arg name="node_name" value="$(arg pylon_node_name0)" />
   </include>
-<!--  <include file="$(find data_collection)/launch/basler.launch">
+  <include file="$(find data_collection)/launch/basler.launch">
   	<arg name="device_user_id" value="cam1" />
-  	<arg name="node_name" value="pylon_camera_node1" />
-  </include> -->
+  	<arg name="node_name" value="$(arg pylon_node_name1)" />
+  </include>
+  
 
-  <!-- <include file="$(find data_collection)/launch/azure.launch"/> -->
-  <!-- <include file="$(find data_collection)/launch/mcu-imu.launch"/> OR 	<node pkg="mcu_interface" type="mcu" name="mcu" args="/dev/ttyUSB0"/> -->
-  <node pkg="image_view" type="image_view" name="image_view" args="image:=/$(arg node_name)/image_raw _image_transport:=theora" />
+  <!-- Azure camera-->
+  <include file="$(find azure_kinect_ros_driver)/launch/driver.launch" >
+    <arg name="fps" value="5" />
+    <arg name="wired_sync_mode" value="2"/>
+  </include>
+
+
+  <!-- MCU and IMU-->
+  <node pkg="mcu_interface" type="mcu" name="mcu" args="/dev/ttyUSB0"/>
+
+  <!-- For debugging -->
+  <node pkg="image_view" type="image_view" name="$(arg pylon_node_name0)_image_view" args="image:=/$(arg pylon_node_name0)/image_raw _image_transport:=theora" />
+  <node pkg="image_view" type="image_view" name="$(arg pylon_node_name1)_image_view" args="image:=/$(arg pylon_node_name1)/image_raw _image_transport:=theora" />
+  <node pkg="image_view" type="image_view" name="azure_image_view" args="image:=/depth/image_raw" />
+
 </launch>
