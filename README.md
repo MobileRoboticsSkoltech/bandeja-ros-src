@@ -49,8 +49,8 @@ Patched package is used for hardware time synchronization of lidar
 MCU-IMU node is receiving data from hardware platform via virtual serial port and publishing the following topics:  
 `/imu` - IMU measurements  
 `/imu_temp` - IMU measured temperature  
-`/lidar_ts` - platform local timestamp of triggered pulses for hardware lidar synchronization  
-`/cameras_ts` - platform local timestamp of triggered pulses for hardware visual and depth cameras synchronization  
+`/lidar_ts` - platform local timestamps of triggered pulses for hardware lidar synchronization  
+`/cameras_ts` - platform local timestamps of triggered pulses for hardware visual and depth cameras synchronization  
 
 ## Serial
 `serial` is a C++ library for seial interface with MCU ([repo](https://github.com/wjwwood/serial.git)).
