@@ -46,7 +46,7 @@ Patched package is used for hardware time synchronization of lidar
 
 
 ## MCU-IMU node
-MCU-IMU node is receiving data from hardware platform via virtual serial port and publishing the following topics:
+MCU-IMU node is receiving data from hardware platform via virtual serial port and publishing the following topics:  
 `/imu` - IMU measurements  
 `/imu_temp` - IMU measured temperature  
 `/lidar_ts` - platform local timestamp of triggered pulses for hardware lidar synchronization  
