@@ -2,30 +2,12 @@
 
 ## Sensors utilized:
 <table>
-<tr>
-    <td>Lidar</td>
-    <td>Velodyne VLP-16</td>
-</tr>
-<tr>
-    <td>Visual cameras</td>
-    <td>Basler</td>
-</tr>
-<tr>
-    <td>Depth camera</td>
-    <td>Kinect Azure</td>
-</tr>
-<tr>
-    <td>MCU-platform</td>
-    <td>STM32F4DISCOVERY</td>
-</tr>
-<tr>
-    <td>IMU</td>
-    <td>MPU9150</td>
-</tr>
-<tr>
-    <td>Phone</td>
-    <td>Samsung S10E</td>
-</tr>
+    <tr> <td>Lidar</td> <td>Velodyne VLP-16</td> </tr>
+    <tr> <td>Visual cameras</td> <td>Basler</td> </tr>
+    <tr> <td>Depth camera</td> <td>Kinect Azure</td> </tr>
+    <tr> <td>MCU-platform</td> <td>STM32F4DISCOVERY</td> </tr>
+    <tr> <td>IMU</td> <td>MPU9150</td> </tr>
+    <tr> <td>Phone</td> <td>Samsung S10E</td> </tr>
 </table>
 
 ## Prerequisites
