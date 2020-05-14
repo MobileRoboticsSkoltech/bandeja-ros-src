@@ -35,6 +35,7 @@ Before building the packages by `catkin_make` command the following software mus
 
 ## Full roslaunch
 The following command is used for launching all of the sensors:  
+
 `roslaunch data_collection datacollection.launch`
 
 ## Velodyne LIDAR
