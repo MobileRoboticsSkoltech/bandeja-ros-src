@@ -24,6 +24,11 @@ The following command is used for launching all of the sensors:
 Patched package is used for hardware time synchronization of lidar
 
 ## Basler Visual Cameras
+You might need some dependencies (not if install full version)
+```
+sudo apt install ros-melodic-camera-info-manager ros-melodic-image-geometry
+```
+
 ## Azure Depth Camera
 
 
@@ -38,3 +43,6 @@ MCU-IMU node is receiving data from hardware platform via virtual serial port an
 `serial` is a C++ library for seial interface with MCU ([repo](https://github.com/wjwwood/serial.git)).
 
 ## Samsung S10E Phone
+
+
+
