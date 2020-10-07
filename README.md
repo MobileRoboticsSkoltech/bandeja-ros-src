@@ -53,3 +53,8 @@ MCU-IMU node is receiving data from hardware platform via virtual serial port an
 `serial` is a C++ library for seial interface with MCU ([repo](https://github.com/wjwwood/serial.git)).
 
 ## Samsung S10E Phone
+
+
+## Useful commands
+- save images from current publishing image topic `/pylon_camera_node0/image_raw` to `png` images in current directory
+`rosrun image_view image_saver image:=/pylon_camera_node0/image_raw _filename_format:=%04i.png _encoding:=rgb8`  
