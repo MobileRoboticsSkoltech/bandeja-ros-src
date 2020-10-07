@@ -11,10 +11,25 @@
 </table>
 
 ## Prerequisites
-Before building the packages by `catkin_make` command the following software must be installed:
-- for Basler visual cameras __pylon 5.1.0 Camera Software Suite Linux x86 (64 bit) - Debian Installer Package__ from [here](https://www.baslerweb.com/en/sales-support/downloads/software-downloads/pylon-5-1-0-linux-x86-64-bit-debian/)  
-- for Azure camera __Azure Kinect Sensor SDK__ from [here](https://docs.microsoft.com/en-us/azure/kinect-dk/sensor-sdk-download#linux-installation-instructions)  
+- OS version: Ubuntu 18.04  
+- ROS version: Melodic. Install Desktop-Full from [here](http://wiki.ros.org/melodic/Installation/Ubuntu)
 
+- Before building the packages by `catkin_make` command the following software must be installed:
+    - for Basler visual cameras __pylon 5.1.0 Camera Software Suite Linux x86 (64 bit) - Debian Installer Package__ from [here](https://www.baslerweb.com/en/sales-support/downloads/software-downloads/pylon-5-1-0-linux-x86-64-bit-debian/)  
+    - for Azure camera __Azure Kinect Sensor SDK__ from [here](https://docs.microsoft.com/en-us/azure/kinect-dk/sensor-sdk-download#linux-installation-instructions)  
+- Velodyne related notes
+    - Velodyne package must be clonned from patched branch by:  
+`git clone --single-branch --branch mrob-patches https://github.com/anastasiia-kornilova/velodyne.git`  
+
+    - To set up lidar go to [tutorial](http://wiki.ros.org/velodyne/Tutorials/Getting%20Started%20with%20the%20Velodyne%20VLP16) and do __only__ step `1.1 Configure your computer’s IP address through the Gnome interface` and just in case `4. Viewing the Data`
+
+    - In case of problem `fatal error: pcap.h: No such file or directory` do  
+`sudo apt-get install -y libpcap-dev`  
+- To be able to use serial interface by MCU package, run  
+`sudo usermod -a -G dialout $USER`
+Then log out and log in.  
+
+    
 ## Full roslaunch
 The following command is used for launching all of the sensors:  
 
@@ -45,4 +60,10 @@ MCU-IMU node is receiving data from hardware platform via virtual serial port an
 ## Samsung S10E Phone
 
 
+<<<<<<< HEAD
 
+=======
+## Useful commands
+- save images from current publishing image topic `/pylon_camera_node0/image_raw` to `png` images in current directory
+`rosrun image_view image_saver image:=/pylon_camera_node0/image_raw _filename_format:=%04i.png _encoding:=rgb8`  
+>>>>>>> 1c21013b0caadebbe7221332928871e395bb80e2
