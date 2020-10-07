@@ -7,8 +7,8 @@
 
   
   <!-- Velodyne lidar-->
-  <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
-  
+  <!--<include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
+  -->
 
   <!-- Basler cameras-->
   <include file="$(find data_collection)/launch/basler.launch">
@@ -19,21 +19,22 @@
   	<arg name="device_user_id" value="cam1" />
   	<arg name="node_name" value="$(arg pylon_node_name1)" />
   </include>
-  
 
   <!-- Azure camera-->
-  <include file="$(find azure_kinect_ros_driver)/launch/driver.launch" >
+  <!-- <include file="$(find azure_kinect_ros_driver)/launch/driver.launch" >
     <arg name="fps" value="5" />
     <arg name="wired_sync_mode" value="2"/>
-  </include>
+  </include> -->
 
 
   <!-- MCU and IMU-->
   <node pkg="mcu_interface" type="mcu" name="mcu" args="/dev/ttyUSB0"/>
 
   <!-- For debugging -->
+  <!--
   <node pkg="image_view" type="image_view" name="$(arg pylon_node_name0)_image_view" args="image:=/$(arg pylon_node_name0)/image_raw _image_transport:=theora" />
   <node pkg="image_view" type="image_view" name="$(arg pylon_node_name1)_image_view" args="image:=/$(arg pylon_node_name1)/image_raw _image_transport:=theora" />
   <node pkg="image_view" type="image_view" name="azure_image_view" args="image:=/depth/image_raw" />
+  -->
 
 </launch>

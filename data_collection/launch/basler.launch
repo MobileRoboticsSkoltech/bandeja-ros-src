@@ -7,7 +7,7 @@
     <arg name="startup_user_set" default="CurrentSetting" />
     <arg name="enable_status_publisher" default="true" />
     <arg name="enable_current_params_publisher" default="true" />
-    <arg name="config_file" default="$(find pylon_camera)/config/default.yaml" />
+    <arg name="config_file" default="$(find data_collection)/config/pylon_basler.yaml" />
 
     <arg name="device_user_id" default="" />
 
