@@ -21,7 +21,7 @@
     - Velodyne package must be clonned from patched branch by:  
 `git clone --single-branch --branch mrob-patches https://github.com/anastasiia-kornilova/velodyne.git`  
 
-    - To set up lidar go to [tutorial](http://wiki.ros.org/velodyne/Tutorials/Getting%20Started%20with%20the%20Velodyne%20VLP16) and do __only__ steps `1.1 Configure your computer’s IP address through the Gnome interface` and `Viewing the Data`
+    - To set up lidar go to [tutorial](http://wiki.ros.org/velodyne/Tutorials/Getting%20Started%20with%20the%20Velodyne%20VLP16) and do __only__ step `1.1 Configure your computer’s IP address through the Gnome interface` and just in case `4. Viewing the Data`
 
     - In case of problem `fatal error: pcap.h: No such file or directory` do  
 `sudo apt-get install -y libpcap-dev`  
