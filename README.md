@@ -12,7 +12,7 @@
 
 ## Prerequisites
 - OS version: Ubuntu 18.04  
-- ROS version: Melodic instal from [here](http://wiki.ros.org/melodic/Installation/Ubuntu)
+- ROS version: Melodic. Install Desktop-Full from [here](http://wiki.ros.org/melodic/Installation/Ubuntu)
 
 - Before building the packages by `catkin_make` command the following software must be installed:
     - for Basler visual cameras __pylon 5.1.0 Camera Software Suite Linux x86 (64 bit) - Debian Installer Package__ from [here](https://www.baslerweb.com/en/sales-support/downloads/software-downloads/pylon-5-1-0-linux-x86-64-bit-debian/)  
@@ -39,6 +39,11 @@ The following command is used for launching all of the sensors:
 Patched package is used for hardware time synchronization of lidar
 
 ## Basler Visual Cameras
+You might need some dependencies (not if install full version)
+```
+sudo apt install ros-melodic-camera-info-manager ros-melodic-image-geometry
+```
+
 ## Azure Depth Camera
 
 
@@ -53,3 +58,12 @@ MCU-IMU node is receiving data from hardware platform via virtual serial port an
 `serial` is a C++ library for seial interface with MCU ([repo](https://github.com/wjwwood/serial.git)).
 
 ## Samsung S10E Phone
+
+
+<<<<<<< HEAD
+
+=======
+## Useful commands
+- save images from current publishing image topic `/pylon_camera_node0/image_raw` to `png` images in current directory
+`rosrun image_view image_saver image:=/pylon_camera_node0/image_raw _filename_format:=%04i.png _encoding:=rgb8`  
+>>>>>>> 1c21013b0caadebbe7221332928871e395bb80e2

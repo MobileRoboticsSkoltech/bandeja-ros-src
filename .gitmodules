@@ -4,6 +4,7 @@
 [submodule "velodyne"]
 	path = velodyne
 	url = https://github.com/anastasiia-kornilova/velodyne.git
+	branch = mrob-patches
 [submodule "pylon-ros-camera"]
 	path = pylon-ros-camera
 	url = https://github.com/basler/pylon-ros-camera.git
