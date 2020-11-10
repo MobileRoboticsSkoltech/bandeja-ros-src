@@ -11,6 +11,6 @@
 [submodule "dragandbot_common"]
 	path = dragandbot_common
 	url = https://github.com/dragandbot/dragandbot_common.git
-[submodule "azure_kinect_ros_driver"]
-	path = azure_kinect_ros_driver
+[submodule "Azure_Kinect_ROS_Driver"]
+	path = Azure_Kinect_ROS_Driver
 	url = https://github.com/microsoft/Azure_Kinect_ROS_Driver
