@@ -61,10 +61,16 @@ MCU-IMU node is receiving data from hardware platform via virtual serial port an
 ## Samsung S10E Phone
 
 
-<<<<<<< HEAD
-
-=======
 ## Useful commands
 - save images from current publishing image topic `/pylon_camera_node0/image_raw` to `png` images in current directory
 `rosrun image_view image_saver image:=/pylon_camera_node0/image_raw _filename_format:=%04i.png _encoding:=rgb8`  
->>>>>>> 1c21013b0caadebbe7221332928871e395bb80e2
+
+## Network setup
+Bandeja laptop is at 192.168.1.2, same as all computer laptops describes in other robot configurations (see akula-driver)
+To solve any issue with fingerprinting, you can disable it by editing the file `~./ssh/config`
+```
+Host 192.168.1.*
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+```
+and adding to your table `/etc/hosts` the proper ip-name
