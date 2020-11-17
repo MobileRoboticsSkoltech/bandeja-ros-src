@@ -13,7 +13,7 @@
 #include <boost/math/constants/constants.hpp>
 //#include <chiki-briki_i_v_damki.h>
 
-std::string IMU_TOPIC = "imu";
+std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
 std::string CAMERAS_TS_TOPIC = "cameras_ts";
 std::string LIDAR_TS_TOPIC = "lidar_ts";
@@ -141,7 +141,7 @@ void publish_cameras_ts(ros::Publisher pub, ros::Time ts) {
 
     msg.header.frame_id = frame_id;
     msg.header.stamp = ts;
-    //msg.time_ref
+    msg.time_ref = ros::Time::now();
     pub.publish(msg);
 }
 
@@ -151,7 +151,7 @@ void publish_lidar_ts(ros::Publisher pub, ros::Time ts) {
 
     msg.header.frame_id = frame_id;
     msg.header.stamp = ts;
-    //msg.time_ref
+    msg.time_ref = ros::Time::now();
     pub.publish(msg);
 }
 

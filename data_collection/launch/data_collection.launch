@@ -11,6 +11,7 @@
   <node pkg="tf2_ros" type="static_transform_publisher" name="left_broadcaster" args="0 -0.04 0 0 0 0  base_link left_camera" />
   <node pkg="tf2_ros" type="static_transform_publisher" name="smartphone_broadcaster" args="0 0.1 0 0 0 0  base_link smart_camera" />
   <node pkg="tf2_ros" type="static_transform_publisher" name="velodyne_broadcaster" args="0 0.3 0 0 0 0  base_link velodyne" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="azure_broadcaster" args="0 0.3 0 0 0 0  base_link camera_base" />
   
   <!-- Velodyne lidar-->
   <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
@@ -28,10 +29,10 @@
   </include>
 
   <!-- Azure camera-->
-  <!-- <include file="$(find azure_kinect_ros_driver)/launch/driver.launch" >
+  <include file="$(find data_collection)/launch/azure.launch" >
     <arg name="fps" value="5" />
     <arg name="wired_sync_mode" value="2"/>
-  </include> -->
+  </include>
 
 
   <!-- MCU and IMU-->
