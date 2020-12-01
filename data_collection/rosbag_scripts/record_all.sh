@@ -1,1 +1,1 @@
-rosbag record /mcu_imu /mcu_imu_temp /points2
+rosbag record /azure/points2 /basler/pylon_camera_node0/camera_info /basler/pylon_camera_node0/image_raw /basler/pylon_camera_node1/camera_info /basler/pylon_camera_node1/image_raw /mcu/cameras_ts /mcu/mcu_imu /mcu/mcu_imu_temp /mcu/lidar_ts /velodyne/velodyne_points /tf /tf_static
