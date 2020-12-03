@@ -13,7 +13,7 @@
 #include <boost/math/constants/constants.hpp>
 //#include <chiki-briki_i_v_damki.h>
 
-std::string IMU_TOPIC = "mcu_imu";
+std::string IMU_TOPIC = "imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
 std::string CAMERAS_TS_TOPIC = "cameras_ts";
 std::string LIDAR_TS_TOPIC = "lidar_ts";
@@ -23,7 +23,7 @@ std::string PORT;// = "/dev/ttyUSB200";  // port name
 const int BAUD = 500000;            
 int RATE = 10000;                   
 int TIMOUT = 10;                    
-uint16_t FRACT_NUMBER = 10000; 
+uint32_t FRACT_NUMBER = 25600000; 
 double G = 9.81;
 const double PI = boost::math::constants::pi<double>();
 int TEMP_BUF_SIZE = 200;
@@ -36,78 +36,78 @@ class FieldsCount{
   public:
     int count;   
     FieldsCount (int start = 0) {
-    	count = start;
+        count = start;
     }
     void add (int additive) {
-    	count += additive;
+        count += additive;
     }
     int current (void) {
-    	return count;
+        return count;
     }
 };
 
-std::vector<int16_t> string_to_ints(std::string str, int start_from = 0) { 
-	std::stringstream ss;	 
-	/* Storing the whole string into string stream */
-	ss << str.substr(start_from); 
-	/* Running loop till the end of the stream */
-	std::string temp; 
-	int found; 
-	
-	std::vector<int16_t> ints;        
+std::vector<int32_t> string_to_ints(std::string str, int start_from = 0) { 
+    std::stringstream ss;    
+    /* Storing the whole string into string stream */
+    ss << str.substr(start_from); 
+    /* Running loop till the end of the stream */
+    std::string temp; 
+    int found; 
+    
+    std::vector<int32_t> ints;        
 
-	while (!ss.eof()) { 
-		/* extracting word by word from stream */
-		ss >> temp; 
-		/* Checking the given word is integer or not */
-		if (std::stringstream(temp) >> std::hex >> found) {
-			ints.push_back(static_cast<int16_t>(found));
-		}
-		temp = ""; 
-	} 
-	return ints;
+    while (!ss.eof()) { 
+        /* extracting word by word from stream */
+        ss >> temp; 
+        /* Checking the given word is integer or not */
+        if (std::stringstream(temp) >> std::hex >> found) {
+            ints.push_back(static_cast<int32_t>(found));
+        }
+        temp = ""; 
+    } 
+    return ints;
 } 
 
-std::vector<int16_t> subvector(std::vector<int16_t> const &initial_v, int starting_index) {
-   std::vector<int16_t> sub_v(initial_v.begin() + starting_index, initial_v.end());
+std::vector<int32_t> subvector(std::vector<int32_t> const &initial_v, int starting_index) {
+   std::vector<int32_t> sub_v(initial_v.begin() + starting_index, initial_v.end());
    return sub_v;
 }
 
-ros::Time ints_to_board_ts(std::vector<int16_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
-	std::vector<int16_t> ints = subvector(input_ints, fc_pointer->current());
-	
-	double secs = static_cast<uint16_t>(ints[0]) * 60.0 + static_cast<uint16_t>(ints[1]) * 1.0 + (FRACT_NUMBER - static_cast<uint16_t>(ints[2]))/(FRACT_NUMBER + 1.0);
-	ros::Time board_ts = ros::Time(secs);
+ros::Time ints_to_board_ts(std::vector<int32_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
+    std::vector<int32_t> ints = subvector(input_ints, fc_pointer->current());
+    
+    double secs = static_cast<uint32_t>(ints[0]) * 60.0 + static_cast<uint32_t>(ints[1]) * 1.0 + static_cast<uint32_t>(ints[2])*1.0/FRACT_NUMBER;
+    ros::Time board_ts = ros::Time(secs);
 
-	fc_pointer->add(NUM_OF_TS_FIELDS);
-	return board_ts;
+    fc_pointer->add(NUM_OF_TS_FIELDS);
+    return board_ts;
 }
 
-boost::numeric::ublas::vector<double> ints_to_imu_meas(std::vector<int16_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
-	std::vector<int16_t> ints = subvector(input_ints, fc_pointer->current());
-	boost::numeric::ublas::vector<double> imu_meas(NUM_OF_IMU_FIELDS);
-	for (int i = 0; i < imu_meas.size(); i++) {
-		// acc
-		if (i < 3) {
-			imu_meas(i) = ints[i] / 16384.0 * G;
-		}
-		// temperature
-		else if (i == 3) {
-			imu_meas(i) = ints[3] / 340.0 + 35.0;
-		}
-		// gyro
-		else if (i >= 3) {
-			imu_meas(i) =  ints[i] / 131.0 / 180.0 * PI;
-		}
-	}
+boost::numeric::ublas::vector<double> ints_to_imu_meas(std::vector<int32_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
+    std::vector<int32_t> ints = subvector(input_ints, fc_pointer->current());
+    boost::numeric::ublas::vector<double> imu_meas(NUM_OF_IMU_FIELDS);
+    for (int i = 0; i < imu_meas.size(); i++) {
+        // acc
+        if (i < 3) {
+            imu_meas(i) = ints[i] / 16384.0 * G;
+        }
+        // temperature
+        else if (i == 3) {
+            imu_meas(i) = ints[3] / 340.0 + 35.0;
+        }
+        // gyro
+        else if (i >= 3) {
+            imu_meas(i) =  ints[i] / 131.0 / 180.0 * PI;
+        }
+    }
 
-	fc_pointer->add(NUM_OF_IMU_FIELDS);
-	return imu_meas;
+    fc_pointer->add(NUM_OF_IMU_FIELDS);
+    return imu_meas;
 }
 
 void publish_imu(ros::Publisher pub, uint8_t imu_n, ros::Time ts, boost::numeric::ublas::vector<double> imu_meas) {
     // publish_imu data [a in m/s^2] and [w in rad/s]
-	std::string frame_id = IMU_TOPIC + std::to_string(imu_n);
+    std::string frame_id = IMU_TOPIC + std::to_string(imu_n);
     sensor_msgs::Imu msg;
 
     msg.header.frame_id = frame_id;
@@ -159,11 +159,11 @@ void pub_distributer(std::string str) {
 }
 
 int main(int argc, char **argv) {
-	// Register signal and signal handler
-	if (argc < 2) {
-	    std::cout << "Please, specify serial device.For example, \"/dev/ttyUSB0\"" << std::endl;
-	    return 0;
-	}
+    // Register signal and signal handler
+    if (argc < 2) {
+        std::cout << "Please, specify serial device.For example, \"/dev/ttyUSB0\"" << std::endl;
+        return 0;
+    }
     
     PORT = argv[1];
     bool board_starting_ts_is_read = false;
@@ -176,12 +176,12 @@ int main(int argc, char **argv) {
     
 
     // Create a publisher object.
-	ros::NodeHandle nh;
-	ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>(IMU_TOPIC, RATE);
-	ros::Publisher imu_temp_pub = nh.advertise<sensor_msgs::Temperature>(IMU_TEMP_TOPIC, RATE);
-	ros::Publisher cameras_ts_pub = nh.advertise<sensor_msgs::TimeReference>(CAMERAS_TS_TOPIC, RATE);
-	ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
-	
+    ros::NodeHandle nh;
+    ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>(IMU_TOPIC, RATE);
+    ros::Publisher imu_temp_pub = nh.advertise<sensor_msgs::Temperature>(IMU_TEMP_TOPIC, RATE);
+    ros::Publisher cameras_ts_pub = nh.advertise<sensor_msgs::TimeReference>(CAMERAS_TS_TOPIC, RATE);
+    ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
+    
     // open port, baudrate, timeout in milliseconds
     serial::Serial serial(PORT, BAUD, serial::Timeout::simpleTimeout(TIMOUT));
 
@@ -194,37 +194,37 @@ int main(int argc, char **argv) {
 
     // Clean from possibly broken string
     while(serial.available() < TEMP_BUF_SIZE) {
-    	str = serial.readline(); 
-    	if(str.at(str.size()-1)=='\n') {
-    		break;
-    	}
+        str = serial.readline(); 
+        if(str.at(str.size()-1)=='\n') {
+            break;
+        }
     }
 
     // Main loop
     while(ros::ok()) {
         if(serial.available() > TEMP_BUF_SIZE) {
-        	str = serial.readline();
-        	//std::cout << str << std::endl;
-            std::vector<int16_t> ints = string_to_ints(str, PLD_STRT_INDX);
+            str = serial.readline();
+            //std::cout << str << std::endl;
+            std::vector<int32_t> ints = string_to_ints(str, PLD_STRT_INDX);
             FieldsCount fields_count;
             ros::Time ts = ints_to_board_ts(ints, &fields_count);
-		   	switch (str.at(0)) {
-				case 'i': {
-					boost::numeric::ublas::vector<double> imu_meas;
-					imu_meas = ints_to_imu_meas(ints, &fields_count);
-					publish_imu(imu_pub, 0, ts, imu_meas);
-					publish_imu_temperature(imu_temp_pub, 0, ts, imu_meas);
-					break;
-				}
-				case 'c': {
-					publish_cameras_ts(cameras_ts_pub, ts);
-					break;
-				}
-				case 'l': {
-					publish_lidar_ts(lidar_ts_pub, ts);
-					//std::cout << ts << std::endl;
-				}
-			}
-	    }
-	}
+            switch (str.at(0)) {
+                case 'i': {
+                    boost::numeric::ublas::vector<double> imu_meas;
+                    imu_meas = ints_to_imu_meas(ints, &fields_count);
+                    publish_imu(imu_pub, 0, ts, imu_meas);
+                    publish_imu_temperature(imu_temp_pub, 0, ts, imu_meas);
+                    break;
+                }
+                case 'c': {
+                    publish_cameras_ts(cameras_ts_pub, ts);
+                    break;
+                }
+                case 'l': {
+                    publish_lidar_ts(lidar_ts_pub, ts);
+                    //std::cout << ts << std::endl;
+                }
+            }
+        }
+    }
 }
