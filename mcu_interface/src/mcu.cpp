@@ -23,12 +23,12 @@ std::string PORT;// = "/dev/ttyUSB200";  // port name
 const int BAUD = 500000;            
 int RATE = 10000;                   
 int TIMOUT = 10;                    
-uint16_t FRACT_NUMBER = 10000; 
+uint32_t FRACT_NUMBER = 25600000; 
 double G = 9.81;
 const double PI = boost::math::constants::pi<double>();
 int TEMP_BUF_SIZE = 200;
 int NUM_OF_IMUS = 1;
-int NUM_OF_TS_FIELDS = 3;
+int NUM_OF_TS_FIELDS = 4;
 int NUM_OF_IMU_FIELDS = 7;
 int PLD_STRT_INDX = 2; // payload starting index in received string line
 
@@ -76,7 +76,7 @@ std::vector<int16_t> subvector(std::vector<int16_t> const &initial_v, int starti
 ros::Time ints_to_board_ts(std::vector<int16_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
 	std::vector<int16_t> ints = subvector(input_ints, fc_pointer->current());
 	
-	double secs = static_cast<uint16_t>(ints[0]) * 60.0 + static_cast<uint16_t>(ints[1]) * 1.0 + (FRACT_NUMBER - static_cast<uint16_t>(ints[2]))/(FRACT_NUMBER + 1.0);
+	double secs = static_cast<uint16_t>(ints[0]) * 60.0 + static_cast<uint16_t>(ints[1]) * 1.0 + static_cast<uint32_t>(ints[2]<<16 | static_cast<uint16_t>(ints[3]))*1.0/FRACT_NUMBER;
 	ros::Time board_ts = ros::Time(secs);
 
 	fc_pointer->add(NUM_OF_TS_FIELDS);
