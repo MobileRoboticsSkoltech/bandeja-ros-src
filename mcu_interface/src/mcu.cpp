@@ -13,6 +13,10 @@
 #include <boost/math/constants/constants.hpp>
 //#include <chiki-briki_i_v_damki.h>
 
+
+#include <dynamic_reconfigure/server.h>
+#include <mcu_interface/parametersConfig.h>
+
 std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
 std::string CAMERAS_TS_TOPIC = "cameras_ts";
@@ -158,6 +162,18 @@ void publish_lidar_ts(ros::Publisher pub, ros::Time ts) {
 void pub_distributer(std::string str) {
 }
 
+
+// dynamic reconfigure callback
+void dynamic_reconfigure_callback(mcu_interface::parametersConfig &config, uint32_t level)
+{
+    ROS_WARN("dynamic_reconfigure_callback");//TODO change/remove this
+    if (config.start_sync)
+    {
+        // Marsel, here goes the sync function/code only when set to True
+    }
+}
+   
+
 int main(int argc, char **argv) {
 	// Register signal and signal handler
 	if (argc < 2) {
@@ -181,6 +197,13 @@ int main(int argc, char **argv) {
 	ros::Publisher imu_temp_pub = nh.advertise<sensor_msgs::Temperature>(IMU_TEMP_TOPIC, RATE);
 	ros::Publisher cameras_ts_pub = nh.advertise<sensor_msgs::TimeReference>(CAMERAS_TS_TOPIC, RATE);
 	ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
+	
+	// Configure dynamic reconfigure
+	dynamic_reconfigure::Server<mcu_interface::parametersConfig> server;
+    dynamic_reconfigure::Server<mcu_interface::parametersConfig>::CallbackType f;
+    f = boost::bind(&dynamic_reconfigure_callback, _1, _2);
+    server.setCallback(f);
+	
 	
     // open port, baudrate, timeout in milliseconds
     serial::Serial serial(PORT, BAUD, serial::Timeout::simpleTimeout(TIMOUT));
@@ -225,6 +248,8 @@ int main(int argc, char **argv) {
 					//std::cout << ts << std::endl;
 				}
 			}
+			ros::spinOnce();// this checks for callbacks (dynamic reconfigure)
 	    }
+	    usleep(100);
 	}
 }
