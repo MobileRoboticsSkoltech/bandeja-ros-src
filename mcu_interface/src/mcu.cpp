@@ -166,10 +166,10 @@ void pub_distributer(std::string str) {
 // dynamic reconfigure callback
 void dynamic_reconfigure_callback(mcu_interface::parametersConfig &config, uint32_t level)
 {
-    ROS_WARN("dynamic_reconfigure_callback");//TODO change/remove this
     if (config.start_sync)
     {
         // Marsel, here goes the sync function/code only when set to True
+        ROS_WARN("dynamic_reconfigure_callback: Flag set to True");//TODO change/remove this
     }
 }
    
@@ -188,7 +188,7 @@ int main(int argc, char **argv) {
     ros::Time sys_starting_ts, board_starting_ts, ts, ts_old;
     ros::Duration delta_ts;
     // Initialize the ROS system and become a node.
-    ros::init(argc, argv, "it_is_here");
+    ros::init(argc, argv, "mcu_interface");
     
 
     // Create a publisher object.
