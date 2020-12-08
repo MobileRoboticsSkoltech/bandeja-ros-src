@@ -36,6 +36,8 @@ int NUM_OF_TS_FIELDS = 4;
 int NUM_OF_IMU_FIELDS = 7;
 int PLD_STRT_INDX = 2; // payload starting index in received string line
 
+uint32_t alignment_subs = 2560000;//'a'<<24 | 'b'<<16 | 'c'<<8 | '\n';
+
 class FieldsCount{
   public:
     int count;   
@@ -223,6 +225,8 @@ int main(int argc, char **argv) {
     	}
     }
 
+    //serial.write((uint8_t *)&alignment_subs, 4);
+
     // Main loop
     while(ros::ok()) {
         if(serial.available() > TEMP_BUF_SIZE) {
@@ -248,6 +252,7 @@ int main(int argc, char **argv) {
 					//std::cout << ts << std::endl;
 				}
 			}
+			//serial.write((uint8_t *)&alignment_subs, 4);
 			ros::spinOnce();// this checks for callbacks (dynamic reconfigure)
 	    }
 	    usleep(100);
