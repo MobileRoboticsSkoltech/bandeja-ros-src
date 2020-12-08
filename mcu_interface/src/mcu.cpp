@@ -13,7 +13,11 @@
 #include <boost/math/constants/constants.hpp>
 //#include <chiki-briki_i_v_damki.h>
 
-std::string IMU_TOPIC = "imu";
+
+#include <dynamic_reconfigure/server.h>
+#include <mcu_interface/parametersConfig.h>
+
+std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
 std::string CAMERAS_TS_TOPIC = "cameras_ts";
 std::string LIDAR_TS_TOPIC = "lidar_ts";
@@ -28,9 +32,11 @@ double G = 9.81;
 const double PI = boost::math::constants::pi<double>();
 int TEMP_BUF_SIZE = 200;
 int NUM_OF_IMUS = 1;
-int NUM_OF_TS_FIELDS = 3;
+int NUM_OF_TS_FIELDS = 4;
 int NUM_OF_IMU_FIELDS = 7;
 int PLD_STRT_INDX = 2; // payload starting index in received string line
+
+uint32_t alignment_subs = 2560000;//'a'<<24 | 'b'<<16 | 'c'<<8 | '\n';
 
 class FieldsCount{
   public:
@@ -73,11 +79,11 @@ std::vector<int32_t> subvector(std::vector<int32_t> const &initial_v, int starti
    return sub_v;
 }
 
-ros::Time ints_to_board_ts(std::vector<int32_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
-    std::vector<int32_t> ints = subvector(input_ints, fc_pointer->current());
-    
-    double secs = static_cast<uint32_t>(ints[0]) * 60.0 + static_cast<uint32_t>(ints[1]) * 1.0 + static_cast<uint32_t>(ints[2])*1.0/FRACT_NUMBER;
-    ros::Time board_ts = ros::Time(secs);
+ros::Time ints_to_board_ts(std::vector<int16_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
+	std::vector<int16_t> ints = subvector(input_ints, fc_pointer->current());
+	
+	double secs = static_cast<uint16_t>(ints[0]) * 60.0 + static_cast<uint16_t>(ints[1]) * 1.0 + static_cast<uint32_t>(ints[2]<<16 | static_cast<uint16_t>(ints[3]))*1.0/FRACT_NUMBER;
+	ros::Time board_ts = ros::Time(secs);
 
     fc_pointer->add(NUM_OF_TS_FIELDS);
     return board_ts;
@@ -158,6 +164,18 @@ void publish_lidar_ts(ros::Publisher pub, ros::Time ts) {
 void pub_distributer(std::string str) {
 }
 
+
+// dynamic reconfigure callback
+void dynamic_reconfigure_callback(mcu_interface::parametersConfig &config, uint32_t level)
+{
+    if (config.start_sync)
+    {
+        // Marsel, here goes the sync function/code only when set to True
+        ROS_WARN("dynamic_reconfigure_callback: Flag set to True");//TODO change/remove this
+    }
+}
+   
+
 int main(int argc, char **argv) {
     // Register signal and signal handler
     if (argc < 2) {
@@ -172,16 +190,23 @@ int main(int argc, char **argv) {
     ros::Time sys_starting_ts, board_starting_ts, ts, ts_old;
     ros::Duration delta_ts;
     // Initialize the ROS system and become a node.
-    ros::init(argc, argv, "it_is_here");
+    ros::init(argc, argv, "mcu_interface");
     
 
     // Create a publisher object.
-    ros::NodeHandle nh;
-    ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>(IMU_TOPIC, RATE);
-    ros::Publisher imu_temp_pub = nh.advertise<sensor_msgs::Temperature>(IMU_TEMP_TOPIC, RATE);
-    ros::Publisher cameras_ts_pub = nh.advertise<sensor_msgs::TimeReference>(CAMERAS_TS_TOPIC, RATE);
-    ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
-    
+	ros::NodeHandle nh;
+	ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>(IMU_TOPIC, RATE);
+	ros::Publisher imu_temp_pub = nh.advertise<sensor_msgs::Temperature>(IMU_TEMP_TOPIC, RATE);
+	ros::Publisher cameras_ts_pub = nh.advertise<sensor_msgs::TimeReference>(CAMERAS_TS_TOPIC, RATE);
+	ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
+	
+	// Configure dynamic reconfigure
+	dynamic_reconfigure::Server<mcu_interface::parametersConfig> server;
+    dynamic_reconfigure::Server<mcu_interface::parametersConfig>::CallbackType f;
+    f = boost::bind(&dynamic_reconfigure_callback, _1, _2);
+    server.setCallback(f);
+	
+	
     // open port, baudrate, timeout in milliseconds
     serial::Serial serial(PORT, BAUD, serial::Timeout::simpleTimeout(TIMOUT));
 
@@ -200,6 +225,8 @@ int main(int argc, char **argv) {
         }
     }
 
+    //serial.write((uint8_t *)&alignment_subs, 4);
+
     // Main loop
     while(ros::ok()) {
         if(serial.available() > TEMP_BUF_SIZE) {
@@ -208,23 +235,26 @@ int main(int argc, char **argv) {
             std::vector<int32_t> ints = string_to_ints(str, PLD_STRT_INDX);
             FieldsCount fields_count;
             ros::Time ts = ints_to_board_ts(ints, &fields_count);
-            switch (str.at(0)) {
-                case 'i': {
-                    boost::numeric::ublas::vector<double> imu_meas;
-                    imu_meas = ints_to_imu_meas(ints, &fields_count);
-                    publish_imu(imu_pub, 0, ts, imu_meas);
-                    publish_imu_temperature(imu_temp_pub, 0, ts, imu_meas);
-                    break;
-                }
-                case 'c': {
-                    publish_cameras_ts(cameras_ts_pub, ts);
-                    break;
-                }
-                case 'l': {
-                    publish_lidar_ts(lidar_ts_pub, ts);
-                    //std::cout << ts << std::endl;
-                }
-            }
-        }
-    }
+		   	switch (str.at(0)) {
+				case 'i': {
+					boost::numeric::ublas::vector<double> imu_meas;
+					imu_meas = ints_to_imu_meas(ints, &fields_count);
+					publish_imu(imu_pub, 0, ts, imu_meas);
+					publish_imu_temperature(imu_temp_pub, 0, ts, imu_meas);
+					break;
+				}
+				case 'c': {
+					publish_cameras_ts(cameras_ts_pub, ts);
+					break;
+				}
+				case 'l': {
+					publish_lidar_ts(lidar_ts_pub, ts);
+					//std::cout << ts << std::endl;
+				}
+			}
+			//serial.write((uint8_t *)&alignment_subs, 4);
+			ros::spinOnce();// this checks for callbacks (dynamic reconfigure)
+	    }
+	    usleep(100);
+	}
 }
