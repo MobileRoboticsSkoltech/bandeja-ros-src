@@ -16,6 +16,7 @@
 
 #include <dynamic_reconfigure/server.h>
 #include <mcu_interface/parametersConfig.h>
+//#include "mcu_interface/AddTwoInts.h"
 
 std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
@@ -79,8 +80,8 @@ std::vector<int32_t> subvector(std::vector<int32_t> const &initial_v, int starti
    return sub_v;
 }
 
-ros::Time ints_to_board_ts(std::vector<int16_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
-	std::vector<int16_t> ints = subvector(input_ints, fc_pointer->current());
+ros::Time ints_to_board_ts(std::vector<int32_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
+	std::vector<int32_t> ints = subvector(input_ints, fc_pointer->current());
 	
 	double secs = static_cast<uint16_t>(ints[0]) * 60.0 + static_cast<uint16_t>(ints[1]) * 1.0 + static_cast<uint32_t>(ints[2]<<16 | static_cast<uint16_t>(ints[3]))*1.0/FRACT_NUMBER;
 	ros::Time board_ts = ros::Time(secs);
@@ -174,7 +175,16 @@ void dynamic_reconfigure_callback(mcu_interface::parametersConfig &config, uint3
         ROS_WARN("dynamic_reconfigure_callback: Flag set to True");//TODO change/remove this
     }
 }
-   
+
+// Service server
+/*bool add(mcu_interface::AddTwoInts::Request  &req,
+         mcu_interface::AddTwoInts::Response &res)
+{
+  res.sum = req.a + req.b;
+  ROS_INFO("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
+  ROS_INFO("sending back response: [%ld]", (long int)res.sum);
+  return true;
+}*/
 
 int main(int argc, char **argv) {
     // Register signal and signal handler
@@ -200,6 +210,9 @@ int main(int argc, char **argv) {
 	ros::Publisher cameras_ts_pub = nh.advertise<sensor_msgs::TimeReference>(CAMERAS_TS_TOPIC, RATE);
 	ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
 	
+	// Service configure
+	//ros::ServiceServer service = nh.advertiseService("add_two_ints", add);
+
 	// Configure dynamic reconfigure
 	dynamic_reconfigure::Server<mcu_interface::parametersConfig> server;
     dynamic_reconfigure::Server<mcu_interface::parametersConfig>::CallbackType f;

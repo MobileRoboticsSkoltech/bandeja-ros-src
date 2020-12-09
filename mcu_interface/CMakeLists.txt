@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
     std_msgs
     serial
     dynamic_reconfigure
+    message_generation
 )
 
 # add Dynamic reconfigure
@@ -30,3 +31,8 @@ add_executable(mcu src/mcu.cpp)
 add_dependencies(mcu ${PROJECT_NAME}_gencfg)
 
 target_link_libraries(mcu ${catkin_LIBRARIES})
+
+add_service_files(
+  FILES
+  AddTwoInts.srv
+)

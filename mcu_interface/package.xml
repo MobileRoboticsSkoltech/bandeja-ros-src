@@ -15,7 +15,8 @@
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
   <author email="marsel.faizullin@skoltech.ru">Faizullin Marsel</author>
-
+  <author email="g.ferrer@skoltech.ru">Gonzalo Ferrer</author>
+  
   <!-- Build tool and dependencies-->
   <buildtool_depend>catkin</buildtool_depend>
   <depend>roscpp</depend>
@@ -23,5 +24,7 @@
   <depend>std_msgs</depend>
   <depend>serial</depend>
   <depend>dynamic_reconfigure</depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
 
 </package>
