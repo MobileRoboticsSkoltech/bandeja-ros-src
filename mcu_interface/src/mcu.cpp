@@ -178,13 +178,14 @@ void dynamic_reconfigure_callback(mcu_interface::parametersConfig &config, uint3
 
 // Service server
 bool add(mcu_interface::AddTwoInts::Request  &req,
-         mcu_interface::AddTwoInts::Response &res, int some)
+         mcu_interface::AddTwoInts::Response &res, serial::Serial *serial)
 {
-  //res.sum = req.a + req.b;
-    res.sum = 500;
-  ROS_WARN("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
-  ROS_WARN("sending back response: [%ld]", (long int)res.sum);
-  return true;
+    res.sum = 1;
+    alignment_subs = req.a;
+    serial->write((uint8_t *)&alignment_subs, 4);
+    ROS_WARN("request: x=%d", req.a);
+    ROS_WARN("sending back response: [%d]", res.sum);
+    return true;
 }
 
 int main(int argc, char **argv) {
@@ -224,7 +225,7 @@ int main(int argc, char **argv) {
     
     // Service configure
     //ros::ServiceServer service = nh.advertiseService("add_two_ints", add);
-    ros::ServiceServer service = nh.advertiseService<mcu_interface::AddTwoInts::Request, mcu_interface::AddTwoInts::Response>("add_two_ints",boost::bind(add,_1,_2,500));
+    ros::ServiceServer service = nh.advertiseService<mcu_interface::AddTwoInts::Request, mcu_interface::AddTwoInts::Response>("add_two_ints",boost::bind(add, _1, _2, &serial));
 
 
     // check if serial port open
