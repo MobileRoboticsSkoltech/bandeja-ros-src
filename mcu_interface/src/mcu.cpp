@@ -16,7 +16,7 @@
 
 #include <dynamic_reconfigure/server.h>
 #include <mcu_interface/parametersConfig.h>
-//#include "mcu_interface/AddTwoInts.h"
+#include "mcu_interface/AddTwoInts.h"
 
 std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
@@ -177,14 +177,14 @@ void dynamic_reconfigure_callback(mcu_interface::parametersConfig &config, uint3
 }
 
 // Service server
-/*bool add(mcu_interface::AddTwoInts::Request  &req,
+bool add(mcu_interface::AddTwoInts::Request  &req,
          mcu_interface::AddTwoInts::Response &res)
 {
   res.sum = req.a + req.b;
-  ROS_INFO("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
-  ROS_INFO("sending back response: [%ld]", (long int)res.sum);
+  ROS_WARN("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
+  ROS_WARN("sending back response: [%ld]", (long int)res.sum);
   return true;
-}*/
+}
 
 int main(int argc, char **argv) {
     // Register signal and signal handler
@@ -211,7 +211,7 @@ int main(int argc, char **argv) {
 	ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
 	
 	// Service configure
-	//ros::ServiceServer service = nh.advertiseService("add_two_ints", add);
+	ros::ServiceServer service = nh.advertiseService("add_two_ints", add);
 
 	// Configure dynamic reconfigure
 	dynamic_reconfigure::Server<mcu_interface::parametersConfig> server;

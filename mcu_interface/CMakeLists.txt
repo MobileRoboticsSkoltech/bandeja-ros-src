@@ -19,7 +19,15 @@ generate_dynamic_reconfigure_options(
   cfg/mcu_interface.cfg
 )
 
+add_service_files(
+  FILES
+  AddTwoInts.srv
+)
 
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 catkin_package()
 
@@ -32,7 +40,7 @@ add_dependencies(mcu ${PROJECT_NAME}_gencfg)
 
 target_link_libraries(mcu ${catkin_LIBRARIES})
 
-add_service_files(
-  FILES
-  AddTwoInts.srv
-)
+
+add_executable(add_two_ints_client src/add_two_ints_client.cpp)
+target_link_libraries(add_two_ints_client ${catkin_LIBRARIES})
+add_dependencies(add_two_ints_client mcu_interface_gencpp)
