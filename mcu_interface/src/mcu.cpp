@@ -177,14 +177,15 @@ void dynamic_reconfigure_callback(mcu_interface::parametersConfig &config, uint3
 }
 
 // Service server
-bool add(mcu_interface::AddTwoInts::Request  &req,
+bool align_phase(mcu_interface::AddTwoInts::Request  &req,
          mcu_interface::AddTwoInts::Response &res, serial::Serial *serial)
 {
-    res.sum = 1;
     alignment_subs = req.a;
     serial->write((uint8_t *)&alignment_subs, 4);
+    // Stub
+    res.response = "done";
     ROS_WARN("request: x=%d", req.a);
-    ROS_WARN("sending back response: [%d]", res.sum);
+    ROS_WARN("sending back response: [%s]", res.response.c_str());
     return true;
 }
 
@@ -224,8 +225,7 @@ int main(int argc, char **argv) {
     
     
     // Service configure
-    //ros::ServiceServer service = nh.advertiseService("add_two_ints", add);
-    ros::ServiceServer service = nh.advertiseService<mcu_interface::AddTwoInts::Request, mcu_interface::AddTwoInts::Response>("add_two_ints",boost::bind(add, _1, _2, &serial));
+    ros::ServiceServer service = nh.advertiseService<mcu_interface::AddTwoInts::Request, mcu_interface::AddTwoInts::Response>("align_mcu_cam_phase", boost::bind(align_phase, _1, _2, &serial));
 
 
     // check if serial port open

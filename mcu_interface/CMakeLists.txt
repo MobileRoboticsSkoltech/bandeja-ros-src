@@ -21,7 +21,7 @@ generate_dynamic_reconfigure_options(
 
 add_service_files(
   FILES
-  AddTwoInts.srv
+  AlignMcuCamPhase.srv
 )
 
 generate_messages(
@@ -41,6 +41,6 @@ add_dependencies(mcu ${PROJECT_NAME}_gencfg)
 target_link_libraries(mcu ${catkin_LIBRARIES})
 
 
-add_executable(add_two_ints_client src/add_two_ints_client.cpp)
-target_link_libraries(add_two_ints_client ${catkin_LIBRARIES})
-add_dependencies(add_two_ints_client mcu_interface_gencpp)
+add_executable(align_mcu_cam_phase_client src/align_mcu_cam_phase_client.cpp)
+target_link_libraries(align_mcu_cam_phase_client ${catkin_LIBRARIES})
+add_dependencies(align_mcu_cam_phase_client mcu_interface_gencpp)
