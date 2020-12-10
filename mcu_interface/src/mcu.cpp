@@ -178,9 +178,10 @@ void dynamic_reconfigure_callback(mcu_interface::parametersConfig &config, uint3
 
 // Service server
 bool add(mcu_interface::AddTwoInts::Request  &req,
-         mcu_interface::AddTwoInts::Response &res)
+         mcu_interface::AddTwoInts::Response &res, int some)
 {
-  res.sum = req.a + req.b;
+  //res.sum = req.a + req.b;
+    res.sum = 500;
   ROS_WARN("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
   ROS_WARN("sending back response: [%ld]", (long int)res.sum);
   return true;
@@ -210,9 +211,6 @@ int main(int argc, char **argv) {
 	ros::Publisher cameras_ts_pub = nh.advertise<sensor_msgs::TimeReference>(CAMERAS_TS_TOPIC, RATE);
 	ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
 	
-	// Service configure
-	ros::ServiceServer service = nh.advertiseService("add_two_ints", add);
-
 	// Configure dynamic reconfigure
 	dynamic_reconfigure::Server<mcu_interface::parametersConfig> server;
     dynamic_reconfigure::Server<mcu_interface::parametersConfig>::CallbackType f;
@@ -222,6 +220,12 @@ int main(int argc, char **argv) {
 	
     // open port, baudrate, timeout in milliseconds
     serial::Serial serial(PORT, BAUD, serial::Timeout::simpleTimeout(TIMOUT));
+    
+    
+    // Service configure
+    //ros::ServiceServer service = nh.advertiseService("add_two_ints", add);
+    ros::ServiceServer service = nh.advertiseService<mcu_interface::AddTwoInts::Request, mcu_interface::AddTwoInts::Response>("add_two_ints",boost::bind(add,_1,_2,500));
+
 
     // check if serial port open
     std::cout << "Serial port is...";
