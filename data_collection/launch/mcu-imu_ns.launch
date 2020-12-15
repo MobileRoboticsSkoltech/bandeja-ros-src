@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+	<group ns="mcu">
+	<node pkg="mcu_interface" type="mcu" name="mcu" args="/dev/ttyUSB0"/>
+	</group>
+</launch>

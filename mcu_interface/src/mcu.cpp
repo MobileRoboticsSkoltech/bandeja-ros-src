@@ -53,7 +53,7 @@ class FieldsCount{
     }
 };
 
-std::vector<int32_t> string_to_ints(std::string str, int start_from = 0) { 
+std::vector<int16_t> string_to_ints(std::string str, int start_from = 0) { 
     std::stringstream ss;    
     /* Storing the whole string into string stream */
     ss << str.substr(start_from); 
@@ -61,27 +61,27 @@ std::vector<int32_t> string_to_ints(std::string str, int start_from = 0) {
     std::string temp; 
     int found; 
     
-    std::vector<int32_t> ints;        
+    std::vector<int16_t> ints;        
 
     while (!ss.eof()) { 
         /* extracting word by word from stream */
         ss >> temp; 
         /* Checking the given word is integer or not */
         if (std::stringstream(temp) >> std::hex >> found) {
-            ints.push_back(static_cast<int32_t>(found));
+            ints.push_back(static_cast<int16_t>(found));
         }
         temp = ""; 
     } 
     return ints;
 } 
 
-std::vector<int32_t> subvector(std::vector<int32_t> const &initial_v, int starting_index) {
-   std::vector<int32_t> sub_v(initial_v.begin() + starting_index, initial_v.end());
+std::vector<int16_t> subvector(std::vector<int16_t> const &initial_v, int starting_index) {
+   std::vector<int16_t> sub_v(initial_v.begin() + starting_index, initial_v.end());
    return sub_v;
 }
 
-ros::Time ints_to_board_ts(std::vector<int32_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
-	std::vector<int32_t> ints = subvector(input_ints, fc_pointer->current());
+ros::Time ints_to_board_ts(std::vector<int16_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
+	std::vector<int16_t> ints = subvector(input_ints, fc_pointer->current());
 	
 	double secs = static_cast<uint16_t>(ints[0]) * 60.0 + static_cast<uint16_t>(ints[1]) * 1.0 + static_cast<uint32_t>(ints[2]<<16 | static_cast<uint16_t>(ints[3]))*1.0/FRACT_NUMBER;
 	ros::Time board_ts = ros::Time(secs);
@@ -90,8 +90,8 @@ ros::Time ints_to_board_ts(std::vector<int32_t> input_ints, FieldsCount * fc_poi
     return board_ts;
 }
 
-boost::numeric::ublas::vector<double> ints_to_imu_meas(std::vector<int32_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
-    std::vector<int32_t> ints = subvector(input_ints, fc_pointer->current());
+boost::numeric::ublas::vector<double> ints_to_imu_meas(std::vector<int16_t> input_ints, FieldsCount * fc_pointer, int first_element=0) {
+    std::vector<int16_t> ints = subvector(input_ints, fc_pointer->current());
     boost::numeric::ublas::vector<double> imu_meas(NUM_OF_IMU_FIELDS);
     for (int i = 0; i < imu_meas.size(); i++) {
         // acc
@@ -250,7 +250,7 @@ int main(int argc, char **argv) {
         if(serial.available() > TEMP_BUF_SIZE) {
             str = serial.readline();
             //std::cout << str << std::endl;
-            std::vector<int32_t> ints = string_to_ints(str, PLD_STRT_INDX);
+            std::vector<int16_t> ints = string_to_ints(str, PLD_STRT_INDX);
             FieldsCount fields_count;
             ros::Time ts = ints_to_board_ts(ints, &fields_count);
 		   	switch (str.at(0)) {
