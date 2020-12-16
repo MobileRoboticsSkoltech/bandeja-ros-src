@@ -11,7 +11,8 @@
   <node pkg="tf2_ros" type="static_transform_publisher" name="left_broadcaster" args="0 0.04 0 0 0 0  base_link left_camera" />
   <node pkg="tf2_ros" type="static_transform_publisher" name="smartphone_broadcaster" args="0 -0.3 0 0 0 0  base_link smart_camera" />
   <node pkg="tf2_ros" type="static_transform_publisher" name="velodyne_broadcaster" args="0.221207 -0.658529 0.109923 0 0 0  base_link velodyne" />
-  <node pkg="tf2_ros" type="static_transform_publisher" name="azure_broadcaster" args="0 0.3 0 0 0 0  base_link camera_base" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="azure_broadcaster" args="0 0.3 0 0 0 0  base_link azure" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="mcu_imu_broadcaster" args="-0.1 0.2 0 0 0 0  base_link mcu_imu" />
   
   <!-- Velodyne lidar-->
   <group ns="velodyne">
