@@ -37,10 +37,14 @@ int NUM_OF_TS_FIELDS = 4;
 int NUM_OF_IMU_FIELDS = 7;
 int PLD_STRT_INDX = 2; // payload starting index in received string line
 
-uint32_t CAMERAS_TIM_FRACT_NUMBER = 7680000; 
+uint32_t CAMERAS_TIM_FRACT_NUMBER = 15360000; 
 uint32_t alignment_subs = 0;
+uint32_t alignment_subs_old = 0;
 ros::Time last_cameras_ts = ros::Time(0);
-uint8_t CAMERAS_FRAME_RATE = 5;
+float CAMERAS_FRAME_RATE = 5.0;
+float CAMERAS_FRAMING_PERIOD = 1.0 / CAMERAS_FRAME_RATE;
+
+double phase_old = 0;
 
 class FieldsCount{
   public:
@@ -185,23 +189,33 @@ bool align_phase(mcu_interface::AlignMcuCamPhase::Request  &req,
 {
     double phase = req.a;
     ROS_WARN("phase %f", phase);
+
     phase = phase - last_cameras_ts.toSec();
     ROS_WARN("last_cameras_ts.toSec() %f", last_cameras_ts.toSec());
     ROS_WARN("phase = phase - last_ts %f", phase);
-    //phase = phase * CAMERAS_FRAME_RATE; * CAMERAS_TIM_FRACT_NUMBER;
-    phase = std::fmod(phase, 1.0 / CAMERAS_FRAME_RATE);
-    ROS_WARN("phase=std::fmod(phase,1/CAMERAS_FRAME_RATE) %f", phase);
     
+    phase *= CAMERAS_FRAME_RATE;
+    ROS_WARN("phase *= CAMERAS_FRAME_RATE %f", phase);
+    
+    phase = std::fmod(phase, 1.0);
+    ROS_WARN("phase=std::fmod(phase,1.0) %f", phase);
+
     if (phase < 0) {
-        phase += 1.0 / CAMERAS_FRAME_RATE;
+        phase += 1.0;
     }
-    ROS_WARN("phase_=std::fmod(phase,1/CAMERAS_FRAME_RATE) %f", phase);
-    phase = phase * CAMERAS_TIM_FRACT_NUMBER;
+    if (phase >= 1.0) {
+        phase -= 1.0;
+    }
+
+    ROS_WARN("phase_=std::fmod(phase,1.0) %f", phase);
+    phase = phase * (CAMERAS_TIM_FRACT_NUMBER - 1);
     ROS_WARN("phase=phase*CAMERAS_TIM_FRACT_NUMBER %f", phase);
     
     alignment_subs = static_cast<uint32_t> (std::round(phase));
     ROS_WARN("alignment_subs %d\n", alignment_subs);
 
+    //alignment_subs = static_cast<uint32_t>(req.a);
+    //ROS_WARN("alignment_subs %d\n", alignment_subs);
 
     serial->write((uint8_t *)&alignment_subs, 4);
     // Stub
