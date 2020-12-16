@@ -18,10 +18,9 @@
   <group ns="velodyne">
       <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
   </group>
-  <!--
-  -->
-
+  
   <!-- Basler cameras-->
+  <!--
   <group ns="basler">
   <include file="$(find data_collection)/launch/basler.launch">
   	<arg name="device_user_id" value="cam0" />
@@ -32,6 +31,7 @@
   	<arg name="node_name" value="$(arg pylon_node_name1)" />
   </include>
   </group>
+  -->
 
   <!-- Azure camera-->
   <group ns="azure">
