@@ -16,7 +16,7 @@
 
 #include <dynamic_reconfigure/server.h>
 #include <mcu_interface/parametersConfig.h>
-#include "mcu_interface/AddTwoInts.h"
+#include "mcu_interface/AlignMcuCamPhase.h"
 
 std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
@@ -37,7 +37,10 @@ int NUM_OF_TS_FIELDS = 4;
 int NUM_OF_IMU_FIELDS = 7;
 int PLD_STRT_INDX = 2; // payload starting index in received string line
 
-uint32_t alignment_subs = 2560000;//'a'<<24 | 'b'<<16 | 'c'<<8 | '\n';
+uint32_t CAMERAS_TIM_FRACT_NUMBER = 7680000; 
+uint32_t alignment_subs = 0;
+ros::Time last_cameras_ts = ros::Time(0);
+uint8_t CAMERAS_FRAME_RATE = 5;
 
 class FieldsCount{
   public:
@@ -177,15 +180,33 @@ void dynamic_reconfigure_callback(mcu_interface::parametersConfig &config, uint3
 }
 
 // Service server
-bool align_phase(mcu_interface::AddTwoInts::Request  &req,
-         mcu_interface::AddTwoInts::Response &res, serial::Serial *serial)
+bool align_phase(mcu_interface::AlignMcuCamPhase::Request  &req,
+         mcu_interface::AlignMcuCamPhase::Response &res, serial::Serial *serial)
 {
-    alignment_subs = req.a;
+    double phase = req.a;
+    ROS_WARN("phase %f", phase);
+    phase = phase - last_cameras_ts.toSec();
+    ROS_WARN("last_cameras_ts.toSec() %f", last_cameras_ts.toSec());
+    ROS_WARN("phase = phase - last_ts %f", phase);
+    //phase = phase * CAMERAS_FRAME_RATE; * CAMERAS_TIM_FRACT_NUMBER;
+    phase = std::fmod(phase, 1.0 / CAMERAS_FRAME_RATE);
+    ROS_WARN("phase=std::fmod(phase,1/CAMERAS_FRAME_RATE) %f", phase);
+    
+    if (phase < 0) {
+        phase += 1.0 / CAMERAS_FRAME_RATE;
+    }
+    ROS_WARN("phase_=std::fmod(phase,1/CAMERAS_FRAME_RATE) %f", phase);
+    phase = phase * CAMERAS_TIM_FRACT_NUMBER;
+    ROS_WARN("phase=phase*CAMERAS_TIM_FRACT_NUMBER %f", phase);
+    
+    alignment_subs = static_cast<uint32_t> (std::round(phase));
+    ROS_WARN("alignment_subs %d\n", alignment_subs);
+
+
     serial->write((uint8_t *)&alignment_subs, 4);
     // Stub
     res.response = "done";
-    ROS_WARN("request: x=%d", req.a);
-    ROS_WARN("sending back response: [%s]", res.response.c_str());
+    //ROS_WARN("sending back response: [%s]", res.response.c_str());
     return true;
 }
 
@@ -225,7 +246,7 @@ int main(int argc, char **argv) {
     
     
     // Service configure
-    ros::ServiceServer service = nh.advertiseService<mcu_interface::AddTwoInts::Request, mcu_interface::AddTwoInts::Response>("align_mcu_cam_phase", boost::bind(align_phase, _1, _2, &serial));
+    ros::ServiceServer service = nh.advertiseService<mcu_interface::AlignMcuCamPhase::Request, mcu_interface::AlignMcuCamPhase::Response>("align_mcu_cam_phase", boost::bind(align_phase, _1, _2, &serial));
 
 
     // check if serial port open
@@ -263,6 +284,7 @@ int main(int argc, char **argv) {
 				}
 				case 'c': {
 					publish_cameras_ts(cameras_ts_pub, ts);
+                    last_cameras_ts = ts;
 					break;
 				}
 				case 'l': {

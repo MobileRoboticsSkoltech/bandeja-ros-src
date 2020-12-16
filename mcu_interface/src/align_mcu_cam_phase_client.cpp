@@ -14,7 +14,7 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
   ros::ServiceClient client = n.serviceClient<mcu_interface::AlignMcuCamPhase>("align_mcu_cam_phase");
   mcu_interface::AlignMcuCamPhase srv;
-  srv.request.a = atoll(argv[1]);
+  srv.request.a = std::stod(argv[1]);
   //srv.request.b = atoll(argv[2]);
   if (client.call(srv))
   {
