@@ -42,7 +42,8 @@ uint32_t alignment_subs = 0;
 uint32_t alignment_subs_old = 0;
 ros::Time last_cameras_ts = ros::Time(0);
 float CAMERAS_FRAME_RATE = 5.0;
-float CAMERAS_FRAMING_PERIOD = 1.0 / CAMERAS_FRAME_RATE;
+float SAMSUNG_CAMERA_FRAME_RATE = 30.0;
+float SAMSUNG_CAMERA_FRAMING_PERIOD = 1.0 / SAMSUNG_CAMERA_FRAME_RATE;
 
 double phase_old = 0;
 
@@ -190,32 +191,25 @@ bool align_phase(mcu_interface::AlignMcuCamPhase::Request  &req,
     double phase = req.a;
     ROS_WARN("phase %f", phase);
 
-    phase = phase - last_cameras_ts.toSec();
+    double delta = phase - last_cameras_ts.toSec();
     ROS_WARN("last_cameras_ts.toSec() %f", last_cameras_ts.toSec());
-    ROS_WARN("phase = phase - last_ts %f", phase);
+    ROS_WARN("delta = phase - last_ts %f", delta);
     
-    phase *= CAMERAS_FRAME_RATE;
-    ROS_WARN("phase *= CAMERAS_FRAME_RATE %f", phase);
-    
-    phase = std::fmod(phase, 1.0);
-    ROS_WARN("phase=std::fmod(phase,1.0) %f", phase);
+    double delta_mod = std::fmod(delta, SAMSUNG_CAMERA_FRAMING_PERIOD);
+    ROS_WARN("delta_mod %f", delta_mod);
 
-    if (phase < 0) {
-        phase += 1.0;
+    double delta_mod_pos = 0;
+    if (delta_mod < 0) {
+        delta_mod_pos = delta_mod + SAMSUNG_CAMERA_FRAMING_PERIOD;
     }
-    if (phase >= 1.0) {
-        phase -= 1.0;
-    }
+    ROS_WARN("delta_mod_pos %f", delta_mod_pos);
 
-    ROS_WARN("phase_=std::fmod(phase,1.0) %f", phase);
-    phase = phase * (CAMERAS_TIM_FRACT_NUMBER - 1);
-    ROS_WARN("phase=phase*CAMERAS_TIM_FRACT_NUMBER %f", phase);
+    double subs = delta_mod_pos * CAMERAS_TIM_FRACT_NUMBER * CAMERAS_FRAME_RATE; //-1
+    ROS_WARN("subs %f", subs);
     
-    alignment_subs = static_cast<uint32_t> (std::round(phase));
+    alignment_subs = static_cast<uint32_t> (std::round(subs));
+    //alignment_subs = static_cast<uint32_t> (std::round(req.a));
     ROS_WARN("alignment_subs %d\n", alignment_subs);
-
-    //alignment_subs = static_cast<uint32_t>(req.a);
-    //ROS_WARN("alignment_subs %d\n", alignment_subs);
 
     serial->write((uint8_t *)&alignment_subs, 4);
     // Stub
@@ -299,6 +293,7 @@ int main(int argc, char **argv) {
 				case 'c': {
 					publish_cameras_ts(cameras_ts_pub, ts);
                     last_cameras_ts = ts;
+                    //ROS_WARN("phase=phase*CAMERAS_TIM_FRACT_NUMBER %f", last_cameras_ts.toSec());
 					break;
 				}
 				case 'l': {
