@@ -37,7 +37,7 @@
   <!-- Azure camera-->
   <group ns="azure">
   <include file="$(find data_collection)/launch/azure.launch" >
-    <arg name="fps" value="5" />
+    <arg name="fps" value="30" />
     <arg name="wired_sync_mode" value="2"/>
     <arg name="tf_prefix" value="azure_"/>
   </include>
