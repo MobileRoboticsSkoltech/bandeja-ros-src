@@ -20,8 +20,8 @@
 
 std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
-std::string CAMERAS_TS_TOPIC = "cameras_ts";
-std::string LIDAR_TS_TOPIC = "lidar_ts";
+std::string CAMERAS_TS_TOPIC = "mcu_cameras_ts";
+std::string LIDAR_TS_TOPIC = "mcu_lidar_ts";
 
 std::string IMU_TEMP_TOPIC = IMU_TOPIC + IMU_TEMP_TOPIC_POSTFIX;
 std::string PORT;// = "/dev/ttyUSB200";  // port name
