@@ -45,10 +45,8 @@
 
 
   <!-- MCU and IMU-->
-  <group ns="mcu">
   <node pkg="mcu_interface" type="mcu" name="mcu" args="/dev/ttyUSB0"/>
-  </group>
-
+  
   <!-- For debugging -->
 <!--  
   <node pkg="image_view" type="image_view" name="$(arg pylon_node_name0)_image_view" args="image:=/$(arg pylon_node_name0)/image_raw _image_transport:=theora" />
