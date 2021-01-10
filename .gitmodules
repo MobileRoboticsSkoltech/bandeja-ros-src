@@ -13,4 +13,5 @@
 	url = https://github.com/dragandbot/dragandbot_common.git
 [submodule "Azure_Kinect_ROS_Driver"]
 	path = Azure_Kinect_ROS_Driver
-	url = https://github.com/microsoft/Azure_Kinect_ROS_Driver
+	url = https://github.com/Marselka/Azure_Kinect_ROS_Driver
+	branch = mrob-patches
