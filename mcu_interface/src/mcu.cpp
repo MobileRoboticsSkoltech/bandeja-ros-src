@@ -193,7 +193,7 @@ void send_to_mcu(serial::Serial *serial, uint8_t cmd, uint32_t data=0) {
     uint8_t buf[OUTPUT_DATA_LENGTH_BYTES];
     buf[0] = cmd;
     for(uint8_t i=1; i<OUTPUT_DATA_LENGTH_BYTES; i++) {
-            buf[i] = (uint8_t)(data >> (i * 8));
+            buf[i] = (uint8_t)(data >> ((i-1) * 8));
     }
     serial->write(buf, OUTPUT_DATA_LENGTH_BYTES);
 }
@@ -221,12 +221,12 @@ bool align_phase(mcu_interface::AlignMcuCamPhase::Request  &req,
     ROS_WARN("subs %f", subs);
     
     alignment_subs = static_cast<uint32_t> (std::round(subs));
-    //alignment_subs = static_cast<uint32_t> (std::round(req.a));
+    //alignment_subs = 0x1A2B3C4D;//static_cast<uint32_t> (std::round(req.a));
+    //ROS_WARN("alignment_subs %x\n", alignment_subs);
     ROS_WARN("alignment_subs %d\n", alignment_subs);
     send_to_mcu(serial, ALIGN_FRAMES_CMD, alignment_subs);
     //serial->write((uint8_t *)&alignment_subs, 4);
-    //serial->write(output_buffer, OUTPUT_DATA_LENGTH_BYTES);
-
+    
     // Stub
     res.response = "done";
     //ROS_WARN("sending back response: [%s]", res.response.c_str());
@@ -315,16 +315,21 @@ int main(int argc, char **argv) {
 					break;
 				}
 				case 'l': {
-					publish_lidar_ts(lidar_ts_pub, ts);
-					//std::cout << ts << std::endl;
-				}
+                    publish_lidar_ts(lidar_ts_pub, ts);
+                    ROS_WARN("%s", str.c_str());
+                    //std::cout << ts << std::endl;
+                    break;
+                }
+                case 't': {
+                    ROS_WARN("%s", str.c_str());
+                    break;
+                }
 			}
-			//serial.write((uint8_t *)&alignment_subs, 4);
 			ros::spinOnce();// this checks for callbacks (dynamic reconfigure)
 	    }
         if (flag_some == 1 && (ros::Time::now() - some1).toSec() > 5) {
-            //send_to_mcu(&serial, START_TRIGGER_CMD);
-            serial.write((uint8_t *)&alignment_subs, 5);
+            send_to_mcu(&serial, START_TRIGGER_CMD);
+            //serial.write((uint8_t *)&alignment_subs, 5);
             flag_some = 0;
             ROS_WARN("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         }
