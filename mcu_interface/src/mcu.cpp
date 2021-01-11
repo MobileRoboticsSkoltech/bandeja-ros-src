@@ -42,6 +42,7 @@ int PLD_STRT_INDX = 2; // payload starting index in received string line
 const uint8_t OUTPUT_DATA_LENGTH_BYTES = 5;
 uint8_t ALIGN_FRAMES_CMD = 34;
 uint8_t START_TRIGGER_CMD = 56;
+uint8_t STOP_TRIGGER_CMD = 57;
 
 uint8_t output_buffer[OUTPUT_DATA_LENGTH_BYTES];
 uint32_t CAMERAS_TIM_FRACT_NUMBER = 15360000; 
@@ -274,8 +275,8 @@ int main(int argc, char **argv) {
     
 
     // Create a publisher object.
-	ros::NodeHandle nh;
-	ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>(IMU_TOPIC, RATE);
+    ros::NodeHandle nh;
+    ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>(IMU_TOPIC, RATE);
 	ros::Publisher imu_temp_pub = nh.advertise<sensor_msgs::Temperature>(IMU_TEMP_TOPIC, RATE);
 	ros::Publisher cameras_ts_pub = nh.advertise<sensor_msgs::TimeReference>(CAMERAS_TS_TOPIC, RATE);
 	ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
@@ -312,10 +313,10 @@ int main(int argc, char **argv) {
             break;
         }
     }
+
     //publish_s10_ts(s10_ts_pub, ros::Time(0.5), ros::Time(50));
-    
-    ros::Time some1 = ros::Time::now();
-    uint8_t flag_some = 1;
+    //ros::Time some1 = ros::Time::now();
+    //uint8_t flag_some = 1;
     //serial.write((uint8_t *)&alignment_subs, 4);
     //send_to_mcu(&serial, START_TRIGGER_CMD);
 
@@ -355,13 +356,13 @@ int main(int argc, char **argv) {
 			}
 			ros::spinOnce();// this checks for callbacks (dynamic reconfigure)
 	    }
-        if (flag_some == 1 && (ros::Time::now() - some1).toSec() > 5) {
+        //if (flag_some == 1 && (ros::Time::now() - some1).toSec() > 5) {
             //send_to_mcu(&serial, START_TRIGGER_CMD);
             //serial.write((uint8_t *)&alignment_subs, 5);
-            flag_some = 0;
-            ROS_WARN("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        }
-
+            //flag_some = 0;
+            //ROS_WARN("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        //}
 	    usleep(100);
 	}
+    send_to_mcu(&serial, STOP_TRIGGER_CMD);
 }
