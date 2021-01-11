@@ -22,6 +22,7 @@ std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
 std::string CAMERAS_TS_TOPIC = "mcu_cameras_ts";
 std::string LIDAR_TS_TOPIC = "mcu_lidar_ts";
+std::string S10_TS_TOPIC = "mcu_s10_ts";
 
 std::string IMU_TEMP_TOPIC = IMU_TOPIC + IMU_TEMP_TOPIC_POSTFIX;
 std::string PORT;// = "/dev/ttyUSB200";  // port name
@@ -175,6 +176,16 @@ void publish_lidar_ts(ros::Publisher pub, ros::Time ts) {
     pub.publish(msg);
 }
 
+void publish_s10_ts(ros::Publisher pub, ros::Time mcu_ts, ros::Time s10_ts) {
+    std::string frame_id = S10_TS_TOPIC;
+    sensor_msgs::TimeReference msg;
+
+    msg.header.frame_id = frame_id;
+    msg.header.stamp = mcu_ts;
+    msg.time_ref = s10_ts;
+    pub.publish(msg);
+}
+
 void pub_distributer(std::string str) {
 }
 
@@ -236,7 +247,7 @@ bool align_phase(mcu_interface::AlignMcuCamPhase::Request  &req,
 int main(int argc, char **argv) {
     // Register signal and signal handler
     if (argc < 2) {
-        std::cout << "Please, specify serial device.For example, \"/dev/ttyUSB0\"" << std::endl;
+        std::cout << "Please, specify serial device. For example, \"/dev/ttyUSB0\"" << std::endl;
         return 0;
     }
     
@@ -256,7 +267,8 @@ int main(int argc, char **argv) {
 	ros::Publisher imu_temp_pub = nh.advertise<sensor_msgs::Temperature>(IMU_TEMP_TOPIC, RATE);
 	ros::Publisher cameras_ts_pub = nh.advertise<sensor_msgs::TimeReference>(CAMERAS_TS_TOPIC, RATE);
 	ros::Publisher lidar_ts_pub = nh.advertise<sensor_msgs::TimeReference>(LIDAR_TS_TOPIC, RATE);
-	
+    ros::Publisher s10_ts_pub = nh.advertise<sensor_msgs::TimeReference>(S10_TS_TOPIC, 2, true);
+    
 	// Configure dynamic reconfigure
 	dynamic_reconfigure::Server<mcu_interface::parametersConfig> server;
     dynamic_reconfigure::Server<mcu_interface::parametersConfig>::CallbackType f;
@@ -269,7 +281,8 @@ int main(int argc, char **argv) {
     
     
     // Service configure
-    ros::ServiceServer service = nh.advertiseService<mcu_interface::AlignMcuCamPhase::Request, mcu_interface::AlignMcuCamPhase::Response>("align_mcu_cam_phase", boost::bind(align_phase, _1, _2, &serial));
+    ros::ServiceServer service = nh.advertiseService<mcu_interface::AlignMcuCamPhase::Request, mcu_interface::AlignMcuCamPhase::Response>(
+        "align_mcu_cam_phase", boost::bind(align_phase, _1, _2, &serial));
 
 
     // check if serial port open
@@ -286,7 +299,8 @@ int main(int argc, char **argv) {
             break;
         }
     }
-
+    publish_s10_ts(s10_ts_pub, ros::Time(0.5), ros::Time(50));
+    
     ros::Time some1 = ros::Time::now();
     uint8_t flag_some = 1;
     //serial.write((uint8_t *)&alignment_subs, 4);
@@ -316,8 +330,9 @@ int main(int argc, char **argv) {
 				}
 				case 'l': {
                     publish_lidar_ts(lidar_ts_pub, ts);
-                    ROS_WARN("%s", str.c_str());
+                    //ROS_WARN("%s", str.c_str());
                     //std::cout << ts << std::endl;
+                    //publish_s10_ts(s10_ts_pub, ros::Time(0.5), ros::Time(50));
                     break;
                 }
                 case 't': {
