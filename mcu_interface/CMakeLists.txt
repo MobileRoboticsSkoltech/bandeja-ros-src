@@ -23,6 +23,7 @@ add_service_files(
   FILES
   AlignMcuCamPhase.srv
   StartMcuCamTriggering.srv
+  PublishS10Timestamp.srv
 )
 
 generate_messages(
@@ -49,3 +50,7 @@ add_dependencies(align_mcu_cam_phase_client mcu_interface_gencpp)
 add_executable(start_mcu_cam_trigger_client src/start_mcu_cam_trigger_client.cpp)
 target_link_libraries(start_mcu_cam_trigger_client ${catkin_LIBRARIES})
 add_dependencies(start_mcu_cam_trigger_client mcu_interface_gencpp)
+
+add_executable(publish_s10_timestamp_client src/publish_s10_timestamp_client.cpp)
+target_link_libraries(publish_s10_timestamp_client ${catkin_LIBRARIES})
+add_dependencies(publish_s10_timestamp_client mcu_interface_gencpp)
