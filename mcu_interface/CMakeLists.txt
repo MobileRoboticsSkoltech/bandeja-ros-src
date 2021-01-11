@@ -22,6 +22,7 @@ generate_dynamic_reconfigure_options(
 add_service_files(
   FILES
   AlignMcuCamPhase.srv
+  StartMcuCamTriggering.srv
 )
 
 generate_messages(
@@ -44,3 +45,7 @@ target_link_libraries(mcu ${catkin_LIBRARIES})
 add_executable(align_mcu_cam_phase_client src/align_mcu_cam_phase_client.cpp)
 target_link_libraries(align_mcu_cam_phase_client ${catkin_LIBRARIES})
 add_dependencies(align_mcu_cam_phase_client mcu_interface_gencpp)
+
+add_executable(start_mcu_cam_trigger_client src/start_mcu_cam_trigger_client.cpp)
+target_link_libraries(start_mcu_cam_trigger_client ${catkin_LIBRARIES})
+add_dependencies(start_mcu_cam_trigger_client mcu_interface_gencpp)

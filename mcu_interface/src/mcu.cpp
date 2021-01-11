@@ -17,6 +17,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <mcu_interface/parametersConfig.h>
 #include "mcu_interface/AlignMcuCamPhase.h"
+#include "mcu_interface/StartMcuCamTriggering.h"
 
 std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
@@ -244,6 +245,17 @@ bool align_phase(mcu_interface::AlignMcuCamPhase::Request  &req,
     return true;
 }
 
+bool start_triggering(mcu_interface::StartMcuCamTriggering::Request  &req,
+         mcu_interface::StartMcuCamTriggering::Response &res, serial::Serial *serial)
+{
+    send_to_mcu(serial, START_TRIGGER_CMD);
+
+    // Stub
+    res.response = "done";
+    //ROS_WARN("sending back response: [%s]", res.response.c_str());
+    return true;
+}
+
 int main(int argc, char **argv) {
     // Register signal and signal handler
     if (argc < 2) {
@@ -275,14 +287,15 @@ int main(int argc, char **argv) {
     f = boost::bind(&dynamic_reconfigure_callback, _1, _2);
     server.setCallback(f);
 	
-	
-    // open port, baudrate, timeout in milliseconds
+	// open port, baudrate, timeout in milliseconds
     serial::Serial serial(PORT, BAUD, serial::Timeout::simpleTimeout(TIMOUT));
     
-    
     // Service configure
-    ros::ServiceServer service = nh.advertiseService<mcu_interface::AlignMcuCamPhase::Request, mcu_interface::AlignMcuCamPhase::Response>(
+    ros::ServiceServer phase_align_service = nh.advertiseService<mcu_interface::AlignMcuCamPhase::Request, mcu_interface::AlignMcuCamPhase::Response>(
         "align_mcu_cam_phase", boost::bind(align_phase, _1, _2, &serial));
+
+    ros::ServiceServer camera_start_service = nh.advertiseService<mcu_interface::StartMcuCamTriggering::Request, mcu_interface::StartMcuCamTriggering::Response>(
+        "start_mcu_cam_triggering", boost::bind(start_triggering, _1, _2, &serial));
 
 
     // check if serial port open
@@ -299,7 +312,7 @@ int main(int argc, char **argv) {
             break;
         }
     }
-    publish_s10_ts(s10_ts_pub, ros::Time(0.5), ros::Time(50));
+    //publish_s10_ts(s10_ts_pub, ros::Time(0.5), ros::Time(50));
     
     ros::Time some1 = ros::Time::now();
     uint8_t flag_some = 1;
@@ -343,7 +356,7 @@ int main(int argc, char **argv) {
 			ros::spinOnce();// this checks for callbacks (dynamic reconfigure)
 	    }
         if (flag_some == 1 && (ros::Time::now() - some1).toSec() > 5) {
-            send_to_mcu(&serial, START_TRIGGER_CMD);
+            //send_to_mcu(&serial, START_TRIGGER_CMD);
             //serial.write((uint8_t *)&alignment_subs, 5);
             flag_some = 0;
             ROS_WARN("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
