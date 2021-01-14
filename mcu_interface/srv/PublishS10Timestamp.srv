@@ -1,4 +1,0 @@
-float64 mcu_timestamp
-float64 s10_timestamp
----
-string response

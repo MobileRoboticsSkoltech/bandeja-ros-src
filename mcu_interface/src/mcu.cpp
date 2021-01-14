@@ -18,7 +18,7 @@
 #include <mcu_interface/parametersConfig.h>
 #include "mcu_interface/AlignMcuCamPhase.h"
 #include "mcu_interface/StartMcuCamTriggering.h"
-#include "mcu_interface/PublishS10Timestamp.h"
+#include "mcu_interface/PublishS10ToMcuOffset.h"
 
 std::string IMU_TOPIC = "mcu_imu";
 std::string IMU_TEMP_TOPIC_POSTFIX = "_temp";
@@ -258,10 +258,10 @@ bool start_triggering(mcu_interface::StartMcuCamTriggering::Request  &req,
     return true;
 }
 
-bool publish_s10_timestamp(mcu_interface::PublishS10Timestamp::Request  &req,
-         mcu_interface::PublishS10Timestamp::Response &res, ros::Publisher *pub)
+bool publish_s10_to_mcu_offset(mcu_interface::PublishS10ToMcuOffset::Request  &req,
+         mcu_interface::PublishS10ToMcuOffset::Response &res, ros::Publisher *pub)
 {
-    publish_s10_ts(*pub, ros::Time(req.mcu_timestamp), ros::Time(req.s10_timestamp));
+    publish_s10_ts(*pub, ros::Time(last_cameras_ts), ros::Time(last_cameras_ts.toSec() + req.offset));
     // Stub
     res.response = "done";
     //ROS_WARN("sending back response: [%s]", res.response.c_str());
@@ -309,8 +309,8 @@ int main(int argc, char **argv) {
     ros::ServiceServer camera_start_service = nh.advertiseService<mcu_interface::StartMcuCamTriggering::Request, mcu_interface::StartMcuCamTriggering::Response>(
         "start_mcu_cam_triggering", boost::bind(start_triggering, _1, _2, &serial));
 
-    ros::ServiceServer publish_s10_timestamp_service = nh.advertiseService<mcu_interface::PublishS10Timestamp::Request, mcu_interface::PublishS10Timestamp::Response>(
-        "publish_s10_timestamp", boost::bind(publish_s10_timestamp, _1, _2, &s10_ts_pub));
+    ros::ServiceServer publish_s10_to_mcu_offset_service = nh.advertiseService<mcu_interface::PublishS10ToMcuOffset::Request, mcu_interface::PublishS10ToMcuOffset::Response>(
+        "publish_s10_to_mcu_offset", boost::bind(publish_s10_to_mcu_offset, _1, _2, &s10_ts_pub));
 
 
     // check if serial port open
