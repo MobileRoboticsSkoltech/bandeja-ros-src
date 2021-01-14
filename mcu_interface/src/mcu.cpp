@@ -46,11 +46,11 @@ uint8_t START_TRIGGER_CMD = 56;
 uint8_t STOP_TRIGGER_CMD = 57;
 
 uint8_t output_buffer[OUTPUT_DATA_LENGTH_BYTES];
-uint32_t CAMERAS_TIM_FRACT_NUMBER = 15360000; 
+uint32_t CAMERAS_TIM_FRACT_NUMBER = 2560000; 
 uint32_t alignment_subs = 0;
 uint32_t alignment_subs_old = 0;
 ros::Time last_cameras_ts = ros::Time(0);
-float CAMERAS_FRAME_RATE = 5.0;
+float CAMERAS_FRAME_RATE = 30.0;
 float SAMSUNG_CAMERA_FRAME_RATE = 30.0;
 float SAMSUNG_CAMERA_FRAMING_PERIOD = 1.0 / SAMSUNG_CAMERA_FRAME_RATE;
 
