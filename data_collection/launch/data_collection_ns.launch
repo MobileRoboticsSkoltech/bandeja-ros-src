@@ -21,12 +21,14 @@
   </group>
   
   <!-- Basler cameras-->
+  <!--
   <group ns="basler">
   <include file="$(find data_collection)/launch/basler.launch">
   	<arg name="device_user_id" value="cam0" />
   	<arg name="node_name" value="$(arg pylon_node_name0)" />
   </include>
   </group>
+  -->
   <!--
   <include file="$(find data_collection)/launch/basler.launch">
   	<arg name="device_user_id" value="cam1" />
@@ -37,7 +39,7 @@
   <!-- Azure camera-->
   <group ns="azure">
   <include file="$(find data_collection)/launch/azure.launch" >
-    <arg name="fps" value="30" />
+    <arg name="fps" value="5" />
     <arg name="wired_sync_mode" value="2"/>
     <arg name="tf_prefix" value="azure_"/>
   </include>
