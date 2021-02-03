@@ -254,7 +254,7 @@ bool start_triggering(mcu_interface::StartMcuCamTriggering::Request  &req,
 
     // Stub
     res.response = "done";
-    //ROS_WARN("sending back response: [%s]", res.response.c_str());
+    ROS_WARN("start_triggering OK");
     return true;
 }
 
