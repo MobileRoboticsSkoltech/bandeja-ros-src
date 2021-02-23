@@ -53,6 +53,7 @@ ros::Time last_cameras_ts = ros::Time(0);
 float CAMERAS_FRAME_RATE = 30.0;
 float SAMSUNG_CAMERA_FRAME_RATE = 30.0;
 float SAMSUNG_CAMERA_FRAMING_PERIOD = 1.0 / SAMSUNG_CAMERA_FRAME_RATE;
+double MANUAL_ADDITION = +0.0123; //sec
 
 double phase_old = 0;
 
@@ -215,7 +216,7 @@ void send_to_mcu(serial::Serial *serial, uint8_t cmd, uint32_t data=0) {
 bool align_phase(mcu_interface::AlignMcuCamPhase::Request  &req,
          mcu_interface::AlignMcuCamPhase::Response &res, serial::Serial *serial)
 {
-    double phase = req.a;
+    double phase = req.a + MANUAL_ADDITION;
     ROS_WARN("phase %f", phase);
 
     double delta = phase - last_cameras_ts.toSec();
