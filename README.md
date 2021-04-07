@@ -18,9 +18,15 @@
     - for Basler visual cameras __pylon 5.1.0 Camera Software Suite Linux x86 (64 bit) - Debian Installer Package__ from [here](https://www.baslerweb.com/en/sales-support/downloads/software-downloads/pylon-5-1-0-linux-x86-64-bit-debian/)  
     - for Azure camera __Azure Kinect Sensor SDK__ from [here](https://docs.microsoft.com/en-us/azure/kinect-dk/sensor-sdk-download#linux-installation-instructions)  
       - to run `k4aviewer` or `k4arecorder` of the SDK without root follow [this](https://github.com/microsoft/Azure-Kinect-Sensor-SDK/blob/develop/docs/usage.md#linux-device-setup)
+- After cloning this repo do clone 
+    - [serial](https://github.com/wjwwood/serial)
+    - [Azure_Kinect_ROS_Driver](https://github.com/microsoft/Azure_Kinect_ROS_Driver.git)
+    - [pylon-ros-camera](https://github.com/basler/pylon-ros-camera.git)
+    - [dragandbot_common](https://github.com/dragandbot/dragandbot_common.git)
+    - velodyne (see below)
 - Velodyne related notes
     - Velodyne package must be clonned from patched branch by:  
-`git clone --single-branch --branch mrob-patches https://github.com/anastasiia-kornilova/velodyne.git`  
+`git clone --single-branch --branch mrob_patches https://github.com/anastasiia-kornilova/velodyne.git`  
 
     - To set up lidar go to [tutorial](http://wiki.ros.org/velodyne/Tutorials/Getting%20Started%20with%20the%20Velodyne%20VLP16) and do __only__ step `1.1 Configure your computer’s IP address through the Gnome interface` and just in case `4. Viewing the Data`
 
