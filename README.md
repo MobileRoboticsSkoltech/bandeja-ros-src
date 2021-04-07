@@ -22,6 +22,7 @@
     - [serial](https://github.com/wjwwood/serial)
     - [Azure_Kinect_ROS_Driver](https://github.com/microsoft/Azure_Kinect_ROS_Driver.git)
     - [pylon-ros-camera](https://github.com/basler/pylon-ros-camera.git)
+    - [dragandbot_common](https://github.com/dragandbot/dragandbot_common.git)
     - velodyne (see below)
 - Velodyne related notes
     - Velodyne package must be clonned from patched branch by:  
