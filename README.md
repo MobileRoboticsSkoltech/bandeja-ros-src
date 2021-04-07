@@ -20,7 +20,7 @@
       - to run `k4aviewer` or `k4arecorder` of the SDK without root follow [this](https://github.com/microsoft/Azure-Kinect-Sensor-SDK/blob/develop/docs/usage.md#linux-device-setup)
 - Velodyne related notes
     - Velodyne package must be clonned from patched branch by:  
-`git clone --single-branch --branch mrob-patches https://github.com/anastasiia-kornilova/velodyne.git`  
+`git clone --single-branch --branch mrob_patches https://github.com/anastasiia-kornilova/velodyne.git`  
 
     - To set up lidar go to [tutorial](http://wiki.ros.org/velodyne/Tutorials/Getting%20Started%20with%20the%20Velodyne%20VLP16) and do __only__ step `1.1 Configure your computer’s IP address through the Gnome interface` and just in case `4. Viewing the Data`
 
