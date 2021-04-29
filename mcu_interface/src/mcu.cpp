@@ -4,10 +4,11 @@
 #include <sensor_msgs/TimeReference.h>
 #include <string>                   
 #include <iostream>                 
+#include <fstream>
 #include <serial/serial.h>          
 #include <vector>                   
-#include <sstream>                  
-#include <exception>                
+#include <sstream>
+#include <exception>
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/math/constants/constants.hpp>
@@ -53,8 +54,7 @@ ros::Time last_cameras_ts = ros::Time(0);
 float CAMERAS_FRAME_RATE = 30.0;
 float SAMSUNG_CAMERA_FRAME_RATE = 30.0;
 float SAMSUNG_CAMERA_FRAMING_PERIOD = 1.0 / SAMSUNG_CAMERA_FRAME_RATE;
-double MANUAL_ADDITION = +0.0123; //sec
-
+double MANUAL_ADDITION = 0.005493;//-0.01243;//0.02064;//+0.0123; //sec
 double phase_old = 0;
 
 class FieldsCount{
@@ -245,6 +245,32 @@ bool align_phase(mcu_interface::AlignMcuCamPhase::Request  &req,
     // Stub
     res.response = "done";
     //ROS_WARN("sending back response: [%s]", res.response.c_str());
+
+    // Writing debug info into file
+    time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t );
+
+    char buffer [90];
+    strftime(buffer, 90, "/home/mrob/samsung-avatar-dataset-sync/out/mcu_interface/%m(%b)%d_%Y_%H%M%S.csv", now);
+    std::ofstream my_file(buffer);
+    //my_file.open (buffer);
+    //std::string temp(buffer)
+    //ROS_WARN("%s", temp.c_str());
+    ROS_WARN(buffer);
+    if(my_file.is_open()) {
+        my_file << "phase," << phase << std::endl;
+        my_file << "last_cameras_ts.toSec()," << last_cameras_ts.toSec() << std::endl;
+        my_file << "delta = phase - last_ts," << delta << std::endl;
+        my_file << "delta_mod," << delta_mod << std::endl;
+        my_file << "delta_mod_pos," << delta_mod_pos << std::endl;
+        my_file << "subs," << subs << std::endl;
+        my_file << "alignment_subs," << alignment_subs << std::endl;
+    }
+    else {
+        ROS_WARN("error");
+    }
+    my_file.close();
+
     return true;
 }
 
